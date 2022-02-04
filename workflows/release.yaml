@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  workflow_call:
+    secrets:
+      NPM_AUTH_TOKEN:
+        required: true
+      ACTIONS_TOKEN:
+        required: true
+
+jobs:
+  release:
+    name: Release
+    runs-on: [self-hosted, common]
+    container: node:16.13-alpine
+    steps:
+      - name: Install system dependencies
+        run: apk add --no-cache git
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 'Workaround permissions issue'
+        run: chown $(whoami):$(whoami) -R .
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          GIT_AUTHOR_NAME: Intergiro Bot
+          GIT_AUTHOR_EMAIL: 97522104+igirobot@users.noreply.github.com
+          GIT_COMMITTER_NAME: Intergiro Bot
+          GIT_COMMITTER_EMAIL: 97522104+igirobot@users.noreply.github.com
+          HUSKY: "0"
+        run: npx --no-install semantic-release

@@ -1,0 +1,32 @@
+name: Publish apispec
+
+on:
+  workflow_call:
+    secrets:
+      NPM_AUTH_TOKEN:
+        required: true
+
+jobs:
+  apispec:
+    name: Publish apispec
+    runs-on: [self-hosted, common]
+    container: node:16.13-alpine
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Prepare dependencies
+        run: |
+          apk add python3-dev alpine-sdk
+          echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc
+          npm i --quiet @general/apispec-manager
+
+      - name: Verify publishing
+        if: github.event_name == 'pull_request'
+        run: |
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}  --dry-run
+
+      - name: Publish apispec
+        if: github.ref == 'refs/heads/master'
+        run: |
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}   
