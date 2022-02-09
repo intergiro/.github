@@ -10,7 +10,11 @@ jobs:
   apispec:
     name: Publish apispec
     runs-on: [self-hosted, common]
-    container: node:16.13-alpine
+    container:
+      image: gcr.io/ftcs-production/node-build-tools:14.19
+      credentials:
+        username: _json_key
+        password: ${{  secrets.IMAGE_REGISTRY_SECRET }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
