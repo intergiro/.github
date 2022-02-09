@@ -10,8 +10,8 @@ jobs:
     container:
       image: gcr.io/ftcs-production/node-build-tools:16.13
       credentials:
-        username: _json_key
-        password: ${{  secrets.IMAGE_REGISTRY_SECRET }}
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
