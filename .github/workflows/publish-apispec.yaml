@@ -11,7 +11,7 @@ jobs:
     name: Publish apispec
     runs-on: [self-hosted, common]
     container:
-      image: gcr.io/ftcs-production/node-build-tools:14.19
+      image: gcr.io/ftcs-production/node-build-tools:16.13
       credentials:
         username: _json_key
         password: ${{  secrets.IMAGE_REGISTRY_SECRET }}
@@ -21,7 +21,6 @@ jobs:
 
       - name: Prepare dependencies
         run: |
-          apk add python3-dev alpine-sdk
           echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc
           npm i --quiet @general/apispec-manager
 
