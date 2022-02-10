@@ -7,6 +7,10 @@ on:
         required: true
       ACTIONS_TOKEN:
         required: true
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
 
 jobs:
   release:
