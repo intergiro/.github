@@ -7,7 +7,11 @@ jobs:
   lint:
     name: Lint
     runs-on: [self-hosted, common]
-    container: node:16.13-alpine
+    container:
+      image: gcr.io/ftcs-production/node-build-tools:16.13
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
