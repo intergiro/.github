@@ -2,6 +2,11 @@ name: Verify
 
 on:
   workflow_call:
+    secrets:
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
 
 jobs:
   lint:
