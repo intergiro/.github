@@ -4,11 +4,13 @@ on:
   workflow_call:
     inputs:
       working_directory:
-        required: true
+        required: false
         type: string
+        default: "."
       dockerfile_path:
-        required: true
+        required: false
         type: string
+        default: Dockerfile
       docker_image_name:
         required: true
         type: string
@@ -19,15 +21,19 @@ on:
         required: false
         type: string
         default: "table(vulnerability.effectiveSeverity, vulnerability.cvssScore, noteName, vulnerability.packageIssue[0].affectedPackage, vulnerability.packageIssue[0].affectedVersion.name, vulnerability.packageIssue[0].fixedVersion.name)"
+      scan_remote:
+        required: false
+        type: boolean
+        default: true
       jira_project:
-        type: string
         required: true
+        type: string
       jira_issuetype:
-        type: string
         required: true
+        type: string
       jira_jql:
-        type: string
         required: true
+        type: string
     secrets:
       GCP_JSON_KEY:
         required: true
@@ -44,19 +50,23 @@ jobs:
     runs-on: [self-hosted, common]
     steps:
       - name: Checkout
+        if: inputs.scan_remote == 'false'
         uses: actions/checkout@v2
 
       - name: Set up Docker Context for Buildx
+        if: inputs.scan_remote == 'false'
         run: |
           docker context create builders
 
       - name: Set up Docker Buildx
+        if: inputs.scan_remote == 'false'
         uses: docker/setup-buildx-action@v1
         with:
           version: latest
           endpoint: builders
 
       - name: Build image
+        if: inputs.scan_remote == 'false'
         working-directory: ${{ inputs.working_directory }}
         run: |
           docker build . -f ${{ inputs.dockerfile_path }} -t ${{ inputs.docker_image_name }}:${{ inputs.docker_image_tag }}
@@ -75,7 +85,7 @@ jobs:
       - name: Scan Image
         id: scan_image
         run: |
-          SCAN_ID=$(gcloud artifacts docker images scan \
+          SCAN_ID=$(gcloud artifacts docker images scan ${{ inputs.scan_remote == true && '--remote' || '' }} \
             --format='value(response.scan)' \
             ${{ inputs.docker_image_name }}:${{ inputs.docker_image_tag }})
 
