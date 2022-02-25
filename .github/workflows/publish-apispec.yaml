@@ -9,6 +9,11 @@ on:
         required: true
       DOCKER_REGISTRY_PASSWORD:
         required: true
+    inputs:
+      only_verify:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   apispec:
@@ -29,11 +34,10 @@ jobs:
           npm i --quiet @general/apispec-manager
 
       - name: Verify publishing
-        if: github.event_name == 'pull_request'
         run: |
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}  --dry-run
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run
 
       - name: Publish apispec
-        if: github.ref == 'refs/heads/master'
         run: |
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}   
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}
+        if: ${{ ! inputs.only_verify }}
