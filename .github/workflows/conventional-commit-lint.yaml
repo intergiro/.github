@@ -1,0 +1,41 @@
+name: Conventional commit lint
+
+on:
+  workflow_call:
+    inputs:
+      from:
+        required: true
+        type: string
+      to:
+        required: true
+        type: string
+    secrets:
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
+
+jobs:
+  conventional-commit-lint:
+    name: Conventional commit lint
+    runs-on: [self-hosted, common]
+    container:
+      image: gcr.io/ftcs-production/node-build-tools:16.13
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: 'Workaround permissions issue'
+        run: chown $(whoami):$(whoami) -R .
+
+      - name: Cache node_modules or install
+        run: npm ci
+
+      - name: Run lint
+        run: npx commitlint --from ${{ inputs.from }} --to ${{ github.inputs.to }} --verbose
