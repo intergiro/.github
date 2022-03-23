@@ -26,18 +26,18 @@ on:
         type: boolean
         default: true
       jira_project:
-        required: true
+        required: false
         type: string
+        default: 'CPDE'
       jira_issuetype:
-        required: true
+        required: false
         type: string
-      jira_jql:
-        required: true
-        type: string
+        default: 'DevOps task'
     secrets:
-      GCP_JSON_KEY:
+      GCP_SERVICE_ACCOUNT:
         required: true
-
+      WORKLOAD_IDENTITY_PROVIDER:
+        required: true
       JIRA_BASE_URL:
         required: true
       JIRA_USER_EMAIL:
@@ -48,6 +48,9 @@ on:
 jobs:
   docker-verify-image:
     runs-on: [self-hosted, common]
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - name: Checkout
         if: inputs.scan_remote == 'false'
@@ -80,7 +83,8 @@ jobs:
         id: auth
         uses: "google-github-actions/auth@v0"
         with:
-          credentials_json: "${{ secrets.GCP_JSON_KEY }}"
+          service_account: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}"
 
       - name: Scan Image
         id: scan_image
@@ -121,6 +125,11 @@ jobs:
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
+      - name: Setting repo name
+        if: failure() && steps.scan_image.outputs.vulnerable == 'true'
+        run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        shell: bash
+
       - name: Check Jira issue existence
         if: failure() && steps.scan_image.outputs.vulnerable == 'true'
         id: issue_check
@@ -128,7 +137,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           JIRA_ISSUES_COUNT="$(jira list \
-            --query '${{ inputs.jira_jql }}' | wc -l)"
+            --query 'creator = "githubot@intergiro.com" and project = ${{ inputs.jira_project }} and issuetype = "${{ inputs.jira_issuetype }}" and status not in (Done, Archived) and created >= "-30d" and labels = ${{ env.REPOSITORY_NAME }}' | wc -l)"
 
           echo ::set-output name=issues_found::"${JIRA_ISSUES_COUNT}"
 
