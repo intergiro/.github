@@ -33,6 +33,10 @@ on:
         required: false
         type: string
         default: 'DevOps task'
+      jira_issue_creator:
+        required: false
+        type: string
+        default: 'githubot@intergiro.com'
     secrets:
       GCP_SERVICE_ACCOUNT:
         required: true
@@ -137,7 +141,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           JIRA_ISSUES_COUNT="$(jira list \
-            --query 'creator = "githubot@intergiro.com" and project = ${{ inputs.jira_project }} and issuetype = "${{ inputs.jira_issuetype }}" and status not in (Done, Archived) and created >= "-30d" and labels = ${{ env.REPOSITORY_NAME }}' | wc -l)"
+            --query 'creator = "${{ inputs.jira_issue_creator }}" and project = ${{ inputs.jira_project }} and issuetype = "${{ inputs.jira_issuetype }}" and status not in (Done, Archived) and created >= "-30d" and labels = ${{ env.REPOSITORY_NAME }}' | wc -l)"
 
           echo ::set-output name=issues_found::"${JIRA_ISSUES_COUNT}"
 
