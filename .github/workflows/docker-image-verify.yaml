@@ -153,9 +153,9 @@ jobs:
           project: ${{ inputs.jira_project }}
           issuetype: ${{ inputs.jira_issuetype }}
           summary: |
-            Fix Vulnerability Issues found in ${{ github.event.repository.name }}
+            Fix Vulnerability Issues found in ${{ env.REPOSITORY_NAME }}
           description: |
             GitHub Actions Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Results:
             {noformat}${{ steps.scan_image.outputs.scan_output }}{noformat}
-          fields: '{"labels": ["${{ github.event.repository.name }}"]}'
+          fields: '{"labels": ["${{ env.REPOSITORY_NAME }}"]}'
