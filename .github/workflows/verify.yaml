@@ -25,7 +25,7 @@ jobs:
         run: chown $(whoami):$(whoami) -R .
 
       - name: 'Clean cache'
-        run: sudo npm cache clean --force 
+        run: npm cache clean --force 
 
       - name: Cache node_modules or install
         run: npm ci
