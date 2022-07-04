@@ -40,4 +40,6 @@ jobs:
           npm ci
 
       - name: Run lint
-        run: npx commitlint --from ${{ inputs.from }} --to ${{ github.inputs.to }} --verbose
+        run: |
+          npm cache clean --force
+          npx commitlint --from ${{ inputs.from }} --to ${{ github.inputs.to }} --verbose
