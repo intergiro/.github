@@ -36,7 +36,7 @@ jobs:
 
       - name: Cache node_modules or install
         run: |
-          chown -R 1000:1000 "/github/home/.npm" 
+          chown -R 1000:1000 "~/.npm" 
           npm ci
 
       - name: Run lint
