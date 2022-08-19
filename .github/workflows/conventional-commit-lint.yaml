@@ -9,6 +9,10 @@ on:
       to:
         required: true
         type: string
+      image:
+        type: string
+        required: false
+        default: gcr.io/ftcs-production/node-build-tools:16.13
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
@@ -20,7 +24,7 @@ jobs:
     name: Conventional commit lint
     runs-on: [self-hosted, common]
     container:
-      image: gcr.io/ftcs-production/node-build-tools:16.13
+      image: ${{ inputs.image }}
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
