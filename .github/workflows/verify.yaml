@@ -13,7 +13,7 @@ jobs:
     name: Lint
     runs-on: [self-hosted, common]
     container:
-      image: gcr.io/ftcs-production/node-build-tools:16.13
+      image: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
