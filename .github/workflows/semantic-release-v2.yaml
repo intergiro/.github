@@ -56,11 +56,17 @@ jobs:
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
 
-      - name: 'Workaround permissions issue 1'
-        run: chown $(whoami):$(whoami) -R ~/.npm
+      - name: 'Workaround 1'
+        run: npm cache clean --force
 
-      - name: 'Workaround permissions issue 2'
-        run: chown $(whoami):$(whoami) -R ~/.node-gyp
+      - name: 'Workaround 2'
+        run: npm config rm proxy
+
+      - name: 'Workaround 4'
+        run: npm config rm https-proxy
+
+      - name: 'Workaround 5'
+        run: npm cache verify
 
       - name: Install NPM dependencies
         run: npm ci
