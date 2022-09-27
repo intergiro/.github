@@ -32,12 +32,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-apispecman
-
       - name: Prepare dependencies
         run: |
           echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc

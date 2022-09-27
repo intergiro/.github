@@ -36,13 +36,6 @@ jobs:
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-ci-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-ci-
-
       - name: Install NPM dependencies
         run: npm ci
 
