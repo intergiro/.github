@@ -26,12 +26,18 @@ jobs:
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-apispecman
 
       - name: Prepare dependencies
         run: |
           echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc
-          npm i --quiet @general/apispec-manager
+          npm i --quiet @general/apispec-manager@latest
 
       - name: Verify publishing
         run: |

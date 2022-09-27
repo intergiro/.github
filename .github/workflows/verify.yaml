@@ -19,12 +19,19 @@ jobs:
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
 
-      - name: Cache node_modules or install
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-ci-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-ci-
+
+      - name: Install NPM dependencies
         run: npm ci
 
       - name: Run lint

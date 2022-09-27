@@ -31,12 +31,19 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-ci-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-ci-
 
       - name: Cache node_modules or install
         run: npm ci
