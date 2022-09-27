@@ -12,7 +12,7 @@ on:
       image:
         type: string
         required: false
-        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
@@ -31,14 +31,14 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
 
-      - name: Cache node_modules or install
+      - name: Install NPM dependencies
         run: npm ci
 
       - name: Run lint

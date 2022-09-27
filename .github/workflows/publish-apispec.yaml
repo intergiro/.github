@@ -10,6 +10,10 @@ on:
       DOCKER_REGISTRY_PASSWORD:
         required: true
     inputs:
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
       only_verify:
         required: false
         type: boolean
@@ -20,18 +24,18 @@ jobs:
     name: Publish apispec
     runs-on: [self-hosted, common]
     container:
-      image: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
+      image: ${{ inputs.image }}
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Prepare dependencies
         run: |
           echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc
-          npm i --quiet @general/apispec-manager
+          npm i --quiet @general/apispec-manager@latest
 
       - name: Verify publishing
         run: |

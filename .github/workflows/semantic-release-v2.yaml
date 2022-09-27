@@ -32,19 +32,23 @@ on:
         required: false
         type: string
         default: 97522104+igirobot@users.noreply.github.com
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
 
 jobs:
   release:
     name: Semantic Release
     runs-on: [self-hosted, common]
     container:
-      image: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
+      image: ${{ inputs.image }}
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           persist-credentials: false
