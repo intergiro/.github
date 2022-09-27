@@ -2,6 +2,11 @@ name: Lint
 
 on:
   workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
@@ -13,7 +18,7 @@ jobs:
     name: Lint
     runs-on: [self-hosted, common]
     container:
-      image: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
+      image: ${{ inputs.image }}
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}

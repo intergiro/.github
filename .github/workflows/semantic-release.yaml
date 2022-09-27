@@ -12,6 +12,10 @@ on:
       DOCKER_REGISTRY_PASSWORD:
         required: true
     inputs:
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
       git_author_name:
         required: false
         type: string
@@ -34,7 +38,7 @@ jobs:
     name: Semantic Release
     runs-on: [self-hosted, common]
     container:
-      image: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16.16
+      image: ${{ inputs.image }}
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
