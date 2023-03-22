@@ -42,12 +42,14 @@ jobs:
 
       - name: Verify publishing
         run: |
+          npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
           ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Publish apispec
         run: |
+          npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
           ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}
         if: ${{ ! inputs.only_verify }}
         env:
