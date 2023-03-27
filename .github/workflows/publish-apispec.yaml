@@ -41,15 +41,15 @@ jobs:
 
       - name: Verify publishing
         run: |
-          echo ${{ secrets.NPM_TOKEN }} > /root/.npmrc
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run
+          echo '${{ secrets.NPM_TOKEN }}' >> .npmrc
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_TOKEN }} --dry-run
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish apispec
         run: |
-          echo ${{ secrets.NPM_TOKEN }} > /root/.npmrc
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}
+          echo '${{ secrets.NPM_TOKEN }}' >> .npmrc
+          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_TOKEN }}
         if: ${{ ! inputs.only_verify }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
