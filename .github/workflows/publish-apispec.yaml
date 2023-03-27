@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare dependencies
         run: |
-          echo '${{ secrets.NPM_TOKEN }}' > /root/.npmrc
+          echo '${{ secrets.NPM_TOKEN }}' > .npmrc
           npm i --quiet @general/apispec-manager@latest
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
