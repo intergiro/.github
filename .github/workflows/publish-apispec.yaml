@@ -3,7 +3,7 @@ name: Publish apispec
 on:
   workflow_call:
     secrets:
-      NPM_TOKEN:
+      NPM_AUTH_TOKEN:
         required: true
       DOCKER_REGISTRY_USER:
         required: true
