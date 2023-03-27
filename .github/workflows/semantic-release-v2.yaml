@@ -58,6 +58,8 @@ jobs:
 
       - name: Add NPM token
         run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Install NPM dependencies
         run: npm ci

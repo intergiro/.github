@@ -3,7 +3,7 @@ name: Publish apispec
 on:
   workflow_call:
     secrets:
-      NPM_AUTH_TOKEN:
+      NPM_TOKEN:
         required: true
       DOCKER_REGISTRY_USER:
         required: true
@@ -34,14 +34,22 @@ jobs:
 
       - name: Prepare dependencies
         run: |
-          echo ${{ secrets.NPM_AUTH_TOKEN }} > /root/.npmrc
+          echo ${{ secrets.NPM_TOKEN }} > /root/.npmrc
           npm i --quiet @general/apispec-manager@latest
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Verify publishing
         run: |
+          echo ${{ secrets.NPM_TOKEN }} > /root/.npmrc
           ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish apispec
         run: |
+          echo ${{ secrets.NPM_TOKEN }} > /root/.npmrc
           ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}
         if: ${{ ! inputs.only_verify }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
