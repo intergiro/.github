@@ -13,7 +13,7 @@ jobs:
     name: Сleanup caches
     runs-on: [self-hosted, common]
     container:
-      image: europe-docker.pkg.dev/ftcs-production/infrastructure/github-actions-cleanup:latest
+      image: europe-docker.pkg.dev/ftcs-production/infrastructure/github-actions-cleanup:1.0
       credentials:
         username: ${{ secrets.DOCKER_REGISTRY_USER }}
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
