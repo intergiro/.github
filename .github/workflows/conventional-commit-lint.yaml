@@ -60,4 +60,4 @@ jobs:
         run: npm ci
 
       - name: Run lint
-        run: npx commitlint --from ${{ inputs.from }} --to ${{ github.inputs.to }} --verbose
+        run: npx commitlint --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
