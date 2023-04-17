@@ -41,7 +41,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Add NPM token
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
