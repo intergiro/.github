@@ -1,0 +1,149 @@
+name: Bundle analyze
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+      command:
+        type: string
+        required: true
+        default: "npm run analyze"
+      service_name:
+        type: string
+        required: false
+        default: "stats"
+    secrets:
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
+      NPM_AUTH_TOKEN:
+        required: true
+
+jobs:
+  build-head:
+    name: 'Build head'
+    runs-on: [self-hosted, common]
+    container:
+      image: ${{ inputs.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
+    - name: 'Workaround permissions issue'
+      run: chown $(whoami):$(whoami) -R .
+
+    - name: Cache node modules
+      id: cache
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: "**/node_modules"
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Add NPM token
+      run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+
+    - name: Build
+      run:  ${{ inputs.command }}
+
+    - name: Upload stats.json
+      uses: actions/upload-artifact@v1
+      with:
+        name: head-${{ inputs.service_name }}
+        path: ./build/bundle-stats.json
+
+  build-base:
+    name: 'Build base'
+    runs-on: [self-hosted, common]
+    container:
+      image: ${{ inputs.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.base_ref }}
+
+    - name: 'Workaround permissions issue'
+      run: chown $(whoami):$(whoami) -R .
+
+    - name: Cache node modules
+      id: cache
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: "**/node_modules"
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Add NPM token
+      run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
+      env:
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+
+    - name: Build
+      run:  ${{ inputs.command }}
+
+    - name: Upload stats.json
+      uses: actions/upload-artifact@v1
+      with:
+        name: base-${{ inputs.service_name }}
+        path: ./build/bundle-stats.json
+
+  compare:
+    needs: [build-base, build-head]
+    name: 'Compare base & head bundle sizes'
+    runs-on: [self-hosted, common]
+    container:
+      image: ${{ inputs.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Download base artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: base-${{ inputs.service_name }}
+
+    - name: Download head artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: head-${{ inputs.service_name }}
+
+    - name: Bundle Stats
+      uses: github/webpack-bundlesize-compare-action@v1.7.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        current-stats-json-path: ./head-${{ inputs.service_name }}/bundle-stats.json
+        base-stats-json-path: ./base-${{ inputs.service_name }}/bundle-stats.json
+        title: ${{ inputs.service_name }}
+
+    - name: Diff between base & head
+      uses: chronotruck/webpack-stats-diff-action@1.3.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        base_stats_path: ./base-${{ inputs.service_name }}/bundle-stats.json
+        head_stats_path: ./head-${{ inputs.service_name }}/bundle-stats.json
+        comment_title: Bundle difference ${{ inputs.service_name }}
