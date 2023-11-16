@@ -33,9 +33,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Add NPM token
-        run: |
-          npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
-          echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
+        run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
