@@ -13,6 +13,7 @@ on:
 jobs:
   zap_scan:
     runs-on: [self-hosted, common]
+    name: API scan
     steps:
       - name: Checkout
         uses: actions/checkout@v4
