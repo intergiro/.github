@@ -1,0 +1,35 @@
+name: njsscan sarif
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+    secrets:
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
+jobs:
+  njsscan:
+    name: Njsscan
+    runs-on: [self-hosted, common]
+    container:
+      image: ${{ inputs.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: nodejsscan scan
+      id: njsscan
+      uses: ajinabraham/njsscan-action@master
+      with:
+        args: '. --sarif --output results.sarif || true'
+    - name: Upload njsscan report
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: results.sarif
