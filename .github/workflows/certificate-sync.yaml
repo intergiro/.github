@@ -36,7 +36,7 @@ jobs:
         name: "Save gc auth data to fastlane folder"
         working-directory: ${{ inputs.DIRECTORY }}
         run: |
-          mkdir Fastlane && touch Fastlane/gc_keys.json && echo ${{ secrets.GCP_SERVICE_ACCOUNT }} >> Fastlane/gc_keys.json         
+          mkdir Fastlane && touch Fastlane/gc_keys.json && cat <<< ${{ secrets.GCP_SERVICE_ACCOUNT }} > Fastlane/gc_keys.json         
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
