@@ -23,6 +23,13 @@ runs:
     using: "composite"
     steps:
 
+         -   id: checkout
+             name: 'Checkout'
+             uses: actions/checkout@v2
+             with:
+               path: ${{ inputs.DIRECTORY }}
+               clean: true
+
         -   id: create-gc-auth-json
             name: "Save gc auth data to fastlane folder"
             shell: bash
