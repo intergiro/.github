@@ -37,8 +37,7 @@ jobs:
         shell: bash
         working-directory: ${{ inputs.DIRECTORY }}
         run: |
-          echo "Save gc_keys.json"
-          ruby Scripts/create-gc-auth-json.rb '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+          echo ${{ secrets.GCP_SERVICE_ACCOUNT }} >> "Fastlane/gc_keys.json"         
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
