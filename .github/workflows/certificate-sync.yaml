@@ -37,7 +37,7 @@ jobs:
         working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         run: |
-          mkdir Fastlane && touch Fastlane/gc_keys.json && cat <<< "${{ secrets.GCP_SERVICE_ACCOUNT }}" > Fastlane/gc_keys.json         
+          mkdir Fastlane && touch Fastlane/gc_keys.json && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> Fastlane/gc_keys.json         
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
