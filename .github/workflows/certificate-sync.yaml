@@ -1,60 +1,62 @@
 name: "Certificates sync"
 
-inputs:
-    DIRECTORY:
+on:
+  workflow_call:
+    inputs:
+      DIRECTORY:
         description: 'Working directory'
         required: true
         type: string
 
-    APP_TYPE:
+      APP_TYPE:
         description: 'App type for which certificates should be synced'
         required: true
         type: string
 
-    BUILD_TYPE:
+      BUILD_TYPE:
         description: 'Build type for which certificates should be synced'
         required: true
         type: string
 
-secrets:        
-    GCP_SERVICE_ACCOUNT:
+    secrets:        
+      GCP_SERVICE_ACCOUNT:
         required: true
 
-runs:
-    using: "composite"
+jobs:
+  check-certificates:
     runs-on: [ macos-latest ]
     timeout-minutes: 20
     steps:
 
-         -  id: checkout
-            name: 'Checkout'
-            uses: actions/checkout@v2
-            with:
-              path: ${{ inputs.DIRECTORY }}
-              clean: true
+      - id: checkout
+        name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          path: ${{ inputs.DIRECTORY }}
+          clean: true
 
-         -  id: create-gc-auth-json
-            name: "Save gc auth data to fastlane folder"
-            shell: bash
-            working-directory: ${{ inputs.DIRECTORY }}
-             run: |
-                 echo "Save gc_keys.json"
-                 ruby Scripts/create-gc-auth-json.rb '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+      - id: create-gc-auth-json
+        name: "Save gc auth data to fastlane folder"
+        shell: bash
+        working-directory: ${{ inputs.DIRECTORY }}
+        run: |
+          echo "Save gc_keys.json"
+          ruby Scripts/create-gc-auth-json.rb '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
-        -   id: sync_prod_app_ceritficates
-            name: 'Sync certificates for prod App'
-            shell: bash
-            if: inputs.APP_TYPE == 'prod'
-            working-directory: ${{ inputs.DIRECTORY }}
-            run: |
-                echo "Sync certificates for prod App"
-                fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app,com.intergiro.app.notificationService"
+      - id: sync_prod_app_ceritficates
+        name: 'Sync certificates for prod App'
+        shell: bash
+        if: inputs.APP_TYPE == 'prod'
+        working-directory: ${{ inputs.DIRECTORY }}
+        run: |
+          echo "Sync certificates for prod App"
+          fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app,com.intergiro.app.notificationService"
 
-        -   id: sync_dev_app_ceritficates
-            name: 'Sync certificates for dev App'
-            shell: bash
-            if: inputs.APP_TYPE == 'dev'
-            working-directory: ${{ inputs.DIRECTORY }}
-            run: |
-                echo "Sync certificates for dev App"
-                fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService"
+      - id: sync_dev_app_ceritficates
+        name: 'Sync certificates for dev App'
+        shell: bash
+        if: inputs.APP_TYPE == 'dev'
+        working-directory: ${{ inputs.DIRECTORY }}
+        run: |
+          echo "Sync certificates for dev App"
+          fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService"
