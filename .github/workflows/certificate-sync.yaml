@@ -35,6 +35,7 @@ jobs:
       - id: create-gc-auth-json
         name: "Save gc auth data to fastlane folder"
         working-directory: ${{ inputs.DIRECTORY }}
+        shell: bash
         run: |
           mkdir Fastlane && touch Fastlane/gc_keys.json && cat <<< ${{ secrets.GCP_SERVICE_ACCOUNT }} > Fastlane/gc_keys.json         
 
