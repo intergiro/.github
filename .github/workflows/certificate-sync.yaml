@@ -21,6 +21,8 @@ inputs:
 
 runs:
     using: "composite"
+    runs-on: [ macos-latest ]
+    timeout-minutes: 20
     steps:
 
          -   id: checkout
