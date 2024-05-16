@@ -16,6 +16,7 @@ inputs:
         required: true
         type: string
 
+secrets:        
     GCP_SERVICE_ACCOUNT:
         required: true
 
@@ -25,20 +26,20 @@ runs:
     timeout-minutes: 20
     steps:
 
-         -   id: checkout
-             name: 'Checkout'
-             uses: actions/checkout@v2
-             with:
-               path: ${{ inputs.DIRECTORY }}
-               clean: true
+         -  id: checkout
+            name: 'Checkout'
+            uses: actions/checkout@v2
+            with:
+              path: ${{ inputs.DIRECTORY }}
+              clean: true
 
-        -   id: create-gc-auth-json
+         -  id: create-gc-auth-json
             name: "Save gc auth data to fastlane folder"
             shell: bash
             working-directory: ${{ inputs.DIRECTORY }}
-            run: |
-                echo "Save gc_keys.json"
-                ruby Scripts/create-gc-auth-json.rb '${{ inputs.GCP_SERVICE_ACCOUNT }}'
+             run: |
+                 echo "Save gc_keys.json"
+                 ruby Scripts/create-gc-auth-json.rb '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
         -   id: sync_prod_app_ceritficates
             name: 'Sync certificates for prod App'
