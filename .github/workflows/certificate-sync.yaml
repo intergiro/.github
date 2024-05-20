@@ -17,6 +17,8 @@ on:
         description: 'Build type for which certificates should be synced'
     secrets:        
       GCP_SERVICE_ACCOUNT:
+        required: true       
+      MATCHFILE:
         required: true
 
 jobs:
@@ -27,17 +29,26 @@ jobs:
 
       - id: checkout
         name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ${{ inputs.DIRECTORY }}
           clean: true
+
+      - id: checkout-pipeline
+        name: 'Checkout pipeline files'
+        uses: actions/checkout@v4
+        with:
+          repository: intergiro/github
+          path: ${{ inputs.DIRECTORY }}/fastlane
+          sparse-checkout: |
+            fastlane
 
       - id: create-gc-auth-json
         name: "Save gc auth data to fastlane folder"
         working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         run: |
-          mkdir Fastlane && touch Fastlane/gc_keys.json && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> Fastlane/gc_keys.json         
+          touch fastlane/gc_keys.json && touch fastlane/Matchfile && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> fastlane/gc_keys.json && echo -n "${{ secrets.MATCHFILE }}" >> fastlane/Matchfile    
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
