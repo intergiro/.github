@@ -48,7 +48,7 @@ jobs:
         working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         run: |
-          ll
+          ls -l
           mkdir Fastlane && touch Fastlane/gc_keys.json && touch fastlane/Matchfile && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> fastlane/gc_keys.json && echo -n "${{ secrets.MATCHFILE }}" >> fastlane/Matchfile    
 
       - id: sync_prod_app_ceritficates
