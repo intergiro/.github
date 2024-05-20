@@ -1,0 +1,56 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  lane :sync_all_certificates do
+    match(
+      type: "development",
+      readonly: true,
+      app_identifier:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService,com.intergiro.app,com.intergiro.app.notificationService"
+      )
+
+    match(
+      type: "adhoc",
+      readonly: true,
+      app_identifier:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService,com.intergiro.app,com.intergiro.app.notificationService"
+      )
+
+    match(
+      type: "appstore",
+      readonly: true,
+      app_identifier:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService,com.intergiro.app,com.intergiro.app.notificationService"
+      )
+  end
+
+  lane :sync_certificates do |options|
+    create_keychain(
+      name: "TempCeritficatesKechain",
+      password: "TempPassword",
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_after_timeout: true
+    )
+    match(
+      type: options[:build_type],
+      readonly: true,
+      app_identifier: options[:identifiers],
+      keychain_name: "TempCeritficatesKechain",
+      keychain_password: "TempPassword"
+      )
+  end
+end
