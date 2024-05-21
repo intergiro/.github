@@ -40,6 +40,7 @@ jobs:
         with:
           repository: intergiro/github
           path: ${{ inputs.DIRECTORY }}/fastlane
+          ref: add_ios_pipelines
           sparse-checkout: |
             fastlane
 
@@ -57,8 +58,6 @@ jobs:
         working-directory: ${{ inputs.DIRECTORY }}
         run: |
           echo "Sync certificates for prod App"
-          ls -l
-          ls -l ./fastlane
           fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app,com.intergiro.app.notificationService"
 
       - id: sync_dev_app_ceritficates
