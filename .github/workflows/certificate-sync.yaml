@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: intergiro/github
-          path: ${{ inputs.DIRECTORY }}/fastlane
+          path: ${{ inputs.DIRECTORY }}
           ref: add_ios_pipelines
           sparse-checkout: |
             fastlane
@@ -49,7 +49,7 @@ jobs:
         working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         run: |
-          touch fastlane/gc_keys.json && touch fastlane/Matchfile && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> fastlane/gc_keys.json && echo "${{ secrets.MATCHFILE }}" | tr : '\n' >> fastlane/Matchfile && cat fastlane/Matchfile
+          touch fastlane/gc_keys.json && touch fastlane/Matchfile && echo -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> fastlane/gc_keys.json && echo "${{ secrets.MATCHFILE }}" | tr : '\n' >> fastlane/Matchfile
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
