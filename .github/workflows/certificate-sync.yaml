@@ -51,7 +51,7 @@ jobs:
         working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         run: |
-          touch fastlane/Matchfile && ruby fastlane/create-gc-auth-json.rb '${{ inputs.GCP_SERVICE_ACCOUNT }}' && echo "${{ secrets.MATCHFILE }}" | tr : '\n' >> fastlane/Matchfile
+          touch fastlane/Matchfile && ruby fastlane/create-gc-auth-json.rb '${{ secrets.GCP_SERVICE_ACCOUNT }}' && echo "${{ secrets.MATCHFILE }}" | tr : '\n' >> fastlane/Matchfile
 
       - id: sync_prod_app_ceritficates
         name: 'Sync certificates for prod App'
