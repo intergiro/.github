@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "Sync certificates for prod App"
           ls -l
+          ls -l ./fastlane
           fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app,com.intergiro.app.notificationService"
 
       - id: sync_dev_app_ceritficates
