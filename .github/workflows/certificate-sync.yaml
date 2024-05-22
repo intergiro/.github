@@ -77,6 +77,7 @@ jobs:
 
       - id: build_prod_framework
         name: 'Build prod framework'
+        working-directory: ${{ inputs.DIRECTORY }}
         shell: bash
         if: ${{ inputs.ACTION == 'build_prod_framework' }}
         run: |
