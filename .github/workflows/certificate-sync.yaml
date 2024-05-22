@@ -26,7 +26,7 @@ on:
 
 jobs:
   check-certificates:
-    runs-on: [ macos-latest ]
+    runs-on: [ self-hosted, common ]
     timeout-minutes: 20
     steps:
 
@@ -46,7 +46,7 @@ jobs:
           ref: add_ios_pipelines
           sparse-checkout: |
             fastlane
-            Scripts
+            Scripts          
 
       - id: create-gc-auth-json
         name: "Save fastlane files and gc auth data to fastlane folder"
@@ -80,4 +80,4 @@ jobs:
         shell: bash
         if: ${{ inputs.ACTION == 'build_prod_framework' }}
         run: |
-          ./Scripts/build-prod-framework.sh
+          ls -a && ls -a Scripts && ./Scripts/build-prod-framework.sh
