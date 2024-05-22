@@ -15,7 +15,7 @@ on:
         type: string
         required: true
         description: 'Build type for which certificates should be synced'
-      BUILD_PROD_FRAMEWORK
+      BUILD_PROD_FRAMEWORK:
         type: boolean
         required: false
     secrets:        
