@@ -15,6 +15,9 @@ on:
         type: string
         required: true
         description: 'Build type for which certificates should be synced'
+      BUILD_PROD_FRAMEWORK
+        type: boolean
+        required: false
     secrets:        
       GCP_SERVICE_ACCOUNT:
         required: true       
@@ -70,3 +73,11 @@ jobs:
         run: |
           echo "Sync certificates for dev App"
           fastlane sync_certificates build_type:${{ inputs.BUILD_TYPE }} identifiers:"com.intergiro.app-dev,com.intergiro.app-dev.notificationService"
+
+
+      - id: build_prod_framework
+        name: 'Build prod framework'
+        shell: bash
+        if: inputs.BUILD_PROD_FRAMEWORK == 'true'
+        run: |
+          ./Scripts/build-prod-framework.sh
