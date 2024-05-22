@@ -78,6 +78,6 @@ jobs:
       - id: build_prod_framework
         name: 'Build prod framework'
         shell: bash
-        if: inputs.BUILD_PROD_FRAMEWORK == 'true'
+        if: ${{ inputs.BUILD_PROD_FRAMEWORK == true || inputs.BUILD_PROD_FRAMEWORK == 'true' }}
         run: |
           ./Scripts/build-prod-framework.sh
