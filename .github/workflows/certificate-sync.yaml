@@ -42,9 +42,8 @@ jobs:
           path: ${{ inputs.DIRECTORY }}
           ref: add_ios_pipelines
           sparse-checkout: |
-            fastlane/Appfile
-            fastlane/Fastfile
-            fastlane/create-gc-auth-json.rb
+            fastlane
+            Scripts
 
       - id: create-gc-auth-json
         name: "Save fastlane files and gc auth data to fastlane folder"
