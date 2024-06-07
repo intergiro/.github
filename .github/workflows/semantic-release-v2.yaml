@@ -16,6 +16,10 @@ on:
       BOT_GPG_PASSPHRASE:
         required: true
     inputs:
+      need_build:
+        required: false
+        type: boolean
+        default: false
       git_author_name:
         required: false
         type: string
@@ -63,6 +67,10 @@ jobs:
 
       - name: Install NPM dependencies
         run: npm ci
+
+      - name: Build
+        if: ${{ inputs.need_build == true }}
+        run: npm run build
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v5
