@@ -61,7 +61,7 @@ jobs:
       run:  ${{ inputs.command }}
 
     - name: Upload stats.json
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: head-${{ inputs.service_name }}
         path: ./build/bundle-stats.json
@@ -106,7 +106,7 @@ jobs:
       run:  ${{ inputs.command }}
 
     - name: Upload stats.json
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: base-${{ inputs.service_name }}
         path: ./build/bundle-stats.json
