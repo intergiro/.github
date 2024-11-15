@@ -14,6 +14,10 @@ on:
         type: string
         required: false
         default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+      npm_config_nodedir:
+        description: Path to node source code so that npm can compile native modules
+        type: string
+        required: false
       only_verify:
         required: false
         type: boolean
@@ -30,28 +34,36 @@ jobs:
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: 'Workaround permissions issue'
+        run: chown $(whoami):$(whoami) -R .
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            apispec:
+              - "**/apispec.json"
 
       - name: Add NPM token
+        if: steps.changes.outputs.apispec == 'true'
         run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-      - name: Prepare dependencies
-        run: |
-          npm i --quiet @general/apispec-manager@latest
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
       - name: Verify publishing
+        if: steps.changes.outputs.apispec == 'true'
         run: |
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run
+          npx -y --package=@general/apispec-manager@latest -c 'apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }} --dry-run'
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
 
       - name: Publish apispec
-        run: |
-          ./node_modules/.bin/apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}
         if: ${{ ! inputs.only_verify }}
+        run: |
+          npx -y --package=@general/apispec-manager@latest -c 'apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}'
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
