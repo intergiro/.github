@@ -61,7 +61,7 @@ jobs:
           npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
 
       - name: Publish apispec
-        if: ${{ ! inputs.only_verify }}
+        if: steps.changes.outputs.apispec == 'true' && ! inputs.only_verify
         run: |
           npx -y --package=@general/apispec-manager@latest -c 'apispecman publish --token ${{ secrets.NPM_AUTH_TOKEN }}'
         env:
