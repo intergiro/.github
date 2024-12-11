@@ -13,6 +13,9 @@ on:
         type: string
         required: false
         default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+      npm_config_nodedir:
+        type: string
+        required: false
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
