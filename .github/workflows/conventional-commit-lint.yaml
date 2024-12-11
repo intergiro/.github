@@ -13,6 +13,9 @@ on:
         type: string
         required: false
         default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+      npm_config_nodedir:
+        type: string
+        required: false
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
@@ -57,6 +60,8 @@ jobs:
       - name: Install NPM dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
+        env:
+          npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
 
       - name: Run lint
         run: npx commitlint --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose

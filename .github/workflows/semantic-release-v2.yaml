@@ -40,6 +40,9 @@ on:
         type: string
         required: false
         default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:16
+      npm_config_nodedir:
+        type: string
+        required: false
 
 jobs:
   release:
@@ -67,6 +70,8 @@ jobs:
 
       - name: Install NPM dependencies
         run: npm ci
+        env:
+          npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
 
       - name: Build
         if: ${{ inputs.need_build == true }}
