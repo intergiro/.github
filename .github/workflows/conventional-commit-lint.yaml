@@ -31,7 +31,7 @@ on:
 jobs:
   conventional-commit-lint:
     name: Conventional commit lint
-    runs-on: [self-hosted, ${{ inputs.runner }}]
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     container:
       image: ${{ inputs.image }}
       credentials:
