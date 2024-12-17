@@ -16,6 +16,10 @@ on:
       npm_config_nodedir:
         type: string
         required: false
+      runner:
+        type: string
+        required: false
+        default: common
     secrets:
       DOCKER_REGISTRY_USER:
         required: true
@@ -27,7 +31,7 @@ on:
 jobs:
   conventional-commit-lint:
     name: Conventional commit lint
-    runs-on: [self-hosted, common]
+    runs-on: [self-hosted, "${{ inputs.runner }}"]
     container:
       image: ${{ inputs.image }}
       credentials:
