@@ -1,0 +1,101 @@
+name: Semantic Release
+
+on:
+  workflow_call:
+    secrets:
+      NPM_AUTH_TOKEN:
+        required: true
+      ACTIONS_TOKEN:
+        required: true
+      DOCKER_REGISTRY_USER:
+        required: true
+      DOCKER_REGISTRY_PASSWORD:
+        required: true
+      BOT_GPG_PRIVATE_KEY:
+        required: true
+      BOT_GPG_PASSPHRASE:
+        required: true
+    inputs:
+      need_build:
+        required: false
+        type: boolean
+        default: false
+      git_author_name:
+        required: false
+        type: string
+        default: Intergiro Bot
+      git_author_email:
+        required: false
+        type: string
+        default: 97522104+igirobot@users.noreply.github.com
+      git_committer_name:
+        required: false
+        type: string
+        default: Intergiro Bot
+      git_committer_email:
+        required: false
+        type: string
+        default: 97522104+igirobot@users.noreply.github.com
+      image:
+        type: string
+        required: false
+        default: europe-docker.pkg.dev/ftcs-production/infrastructure/node-build-tools:20
+      npm_config_nodedir:
+        type: string
+        required: false
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: [self-hosted, common]
+    container:
+      image: ${{ inputs.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_USER }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 'Workaround permissions issue'
+        run: chown $(whoami):$(whoami) -R .
+
+      - name: Add NPM token
+        run: npm config set '//npm.intergiro.tech/:_authToken' ${NPM_AUTH_TOKEN}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Install NPM dependencies
+        run: npm ci
+        env:
+          npm_config_nodedir: ${{ inputs.npm_config_nodedir }}
+
+      - name: Build
+        if: ${{ inputs.need_build == true }}
+        run: npm run build
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.BOT_GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          # Semantic release uses lightweight tags
+          git_tag_gpgsign: false
+          # Github does not support signed push
+          git_push_gpgsign: false
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          GIT_AUTHOR_NAME: ${{ inputs.git_author_name }}
+          GIT_AUTHOR_EMAIL: ${{ inputs.git_author_email }}
+          GIT_COMMITTER_NAME: ${{ inputs.git_committer_name }}
+          GIT_COMMITTER_EMAIL: ${{ inputs.git_committer_email }}
+          HUSKY: "0"
+        run: npx --no-install semantic-release
